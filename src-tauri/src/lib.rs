@@ -1,5 +1,6 @@
 use crate::objects::{Book, Music, VideoGame};
 
+mod db;
 mod objects;
 
 #[tauri::command(rename_all = "snake_case")]

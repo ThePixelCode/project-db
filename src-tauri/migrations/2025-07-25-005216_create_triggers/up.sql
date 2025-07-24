@@ -1,0 +1,88 @@
+
+-- Función y trigger para AUTOR_DEL_OBJETO
+CREATE OR REPLACE FUNCTION validar_autor_objeto()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF (NEW.TIPO_DE_OBJETO = 1) AND NOT EXISTS (SELECT 1 FROM LIBRO WHERE ID_OBJETO = NEW.ID_OBJETO) THEN
+        RAISE EXCEPTION 'El ID_OBJETO no existe en la tabla LIBRO.';
+    END IF;
+    IF (NEW.TIPO_DE_OBJETO = 2) AND NOT EXISTS (SELECT 1 FROM MUSICA WHERE ID_OBJETO = NEW.ID_OBJETO) THEN
+        RAISE EXCEPTION 'El ID_OBJETO no existe en la tabla MUSICA.';
+    END IF;
+    IF (NEW.TIPO_DE_OBJETO = 3) AND NOT EXISTS (SELECT 1 FROM VIDEOJUEGO WHERE ID_OBJETO = NEW.ID_OBJETO) THEN
+        RAISE EXCEPTION 'El ID_OBJETO no existe en la tabla VIDEOJUEGO.';
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS trg_validar_autor_objeto ON autor_del_objeto;
+CREATE TRIGGER trg_validar_autor_objeto
+BEFORE INSERT ON autor_del_objeto
+FOR EACH ROW EXECUTE FUNCTION validar_autor_objeto();
+
+-- Función y trigger para GENERO_DEL_OBJETO
+CREATE OR REPLACE FUNCTION validar_genero_objeto()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF (NEW.TIPO_DE_OBJETO = 1) AND NOT EXISTS (SELECT 1 FROM LIBRO WHERE ID_OBJETO = NEW.ID_OBJETO) THEN
+        RAISE EXCEPTION 'El ID_OBJETO no existe en la tabla LIBRO.';
+    END IF;
+    IF (NEW.TIPO_DE_OBJETO = 2) AND NOT EXISTS (SELECT 1 FROM MUSICA WHERE ID_OBJETO = NEW.ID_OBJETO) THEN
+        RAISE EXCEPTION 'El ID_OBJETO no existe en la tabla MUSICA.';
+    END IF;
+    IF (NEW.TIPO_DE_OBJETO = 3) AND NOT EXISTS (SELECT 1 FROM VIDEOJUEGO WHERE ID_OBJETO = NEW.ID_OBJETO) THEN
+        RAISE EXCEPTION 'El ID_OBJETO no existe en la tabla VIDEOJUEGO.';
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS trg_validar_genero_objeto ON genero_del_objeto;
+CREATE TRIGGER trg_validar_genero_objeto
+BEFORE INSERT ON genero_del_objeto
+FOR EACH ROW EXECUTE FUNCTION validar_genero_objeto();
+
+-- Función y trigger para OBJETO_EN_COLECCION
+CREATE OR REPLACE FUNCTION validar_objeto_en_coleccion()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF (NEW.TIPO_DE_OBJETO = 1) AND NOT EXISTS (SELECT 1 FROM LIBRO WHERE ID_OBJETO = NEW.ID_OBJETO) THEN
+        RAISE EXCEPTION 'El ID_OBJETO no existe en la tabla LIBRO.';
+    END IF;
+    IF (NEW.TIPO_DE_OBJETO = 2) AND NOT EXISTS (SELECT 1 FROM MUSICA WHERE ID_OBJETO = NEW.ID_OBJETO) THEN
+        RAISE EXCEPTION 'El ID_OBJETO no existe en la tabla MUSICA.';
+    END IF;
+    IF (NEW.TIPO_DE_OBJETO = 3) AND NOT EXISTS (SELECT 1 FROM VIDEOJUEGO WHERE ID_OBJETO = NEW.ID_OBJETO) THEN
+        RAISE EXCEPTION 'El ID_OBJETO no existe en la tabla VIDEOJUEGO.';
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS trg_validar_objeto_en_coleccion ON objeto_en_coleccion;
+CREATE TRIGGER trg_validar_objeto_en_coleccion
+BEFORE INSERT ON objeto_en_coleccion
+FOR EACH ROW EXECUTE FUNCTION validar_objeto_en_coleccion();
+
+-- Función y trigger para DISTRIBUIDOR_DEL_OBJETO
+CREATE OR REPLACE FUNCTION validar_distribuidor_objeto()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF (NEW.TIPO_DE_OBJETO = 1) AND NOT EXISTS (SELECT 1 FROM LIBRO WHERE ID_OBJETO = NEW.ID_OBJETO) THEN
+        RAISE EXCEPTION 'El ID_OBJETO no existe en la tabla LIBRO.';
+    END IF;
+    IF (NEW.TIPO_DE_OBJETO = 2) AND NOT EXISTS (SELECT 1 FROM MUSICA WHERE ID_OBJETO = NEW.ID_OBJETO) THEN
+        RAISE EXCEPTION 'El ID_OBJETO no existe en la tabla MUSICA.';
+    END IF;
+    IF (NEW.TIPO_DE_OBJETO = 3) AND NOT EXISTS (SELECT 1 FROM VIDEOJUEGO WHERE ID_OBJETO = NEW.ID_OBJETO) THEN
+        RAISE EXCEPTION 'El ID_OBJETO no existe en la tabla VIDEOJUEGO.';
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS trg_validar_distribuidor_objeto ON distribuidor_del_objeto;
+CREATE TRIGGER trg_validar_distribuidor_objeto
+BEFORE INSERT ON distribuidor_del_objeto
+FOR EACH ROW EXECUTE FUNCTION validar_distribuidor_objeto();
