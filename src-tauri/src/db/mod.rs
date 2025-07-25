@@ -1,16 +1,13 @@
 use std::env;
 
-use diesel::prelude::*;
 use diesel::{Connection, PgConnection};
 use dotenvy::dotenv;
 use log::{error, warn};
 
-use crate::db::models::Book;
+pub mod models;
+pub mod schema;
 
-mod models;
-mod schema;
-
-pub fn establish_connection() -> PgConnection {
+pub fn establish_connection() -> Result<PgConnection, diesel::ConnectionError> {
     dotenv()
         .inspect_err(|e| {
             warn!("Dotenv not available: {}", e);
@@ -24,19 +21,4 @@ pub fn establish_connection() -> PgConnection {
 
     PgConnection::establish(&database_url)
         .inspect_err(|_| error!("Error Connecting to {}", database_url))
-        .unwrap()
-}
-
-pub fn get_book(id: String) {
-    use schema::libro::dsl::*;
-
-    let connection = &mut establish_connection();
-    let result: Vec<Book> = libro
-        .filter(id_objeto.eq(id))
-        .limit(1)
-        .select(Book::as_select())
-        .load(connection)
-        .expect("Error loading books");
-
-    println!("{:?}", result);
 }

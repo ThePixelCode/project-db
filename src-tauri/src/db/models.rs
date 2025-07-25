@@ -1,8 +1,9 @@
 use super::schema;
 use chrono::{NaiveDate, NaiveTime};
 use diesel::prelude::*;
+use serde::{Deserialize, Serialize};
 
-#[derive(Queryable, Selectable, Debug)]
+#[derive(Queryable, Selectable, Debug, Serialize, Deserialize)]
 #[diesel(table_name = schema::autor)]
 #[diesel(check_for_backend(diesel::pg::Pg))]
 pub struct Author {
@@ -14,7 +15,7 @@ pub struct Author {
     pub author_name: String,
 }
 
-#[derive(Queryable, Selectable, Debug)]
+#[derive(Queryable, Selectable, Debug, Serialize, Deserialize)]
 #[diesel(primary_key(id_objeto, id_autor))]
 #[diesel(table_name = schema::autor_del_objeto)]
 #[diesel(check_for_backend(diesel::pg::Pg))]
@@ -27,7 +28,7 @@ pub struct AuthorOfObject {
     pub object_type: i32,
 }
 
-#[derive(Queryable, Selectable, Debug)]
+#[derive(Queryable, Selectable, Debug, Serialize, Deserialize)]
 #[diesel(table_name = schema::coleccion)]
 #[diesel(check_for_backend(diesel::pg::Pg))]
 pub struct Collection {
@@ -39,7 +40,7 @@ pub struct Collection {
     pub parent_collection: Option<String>,
 }
 
-#[derive(Queryable, Selectable, Debug)]
+#[derive(Queryable, Selectable, Debug, Serialize, Deserialize)]
 #[diesel(table_name = schema::distribuidor)]
 #[diesel(check_for_backend(diesel::pg::Pg))]
 pub struct Distributor {
@@ -53,7 +54,7 @@ pub struct Distributor {
     pub foundation_year: NaiveDate,
 }
 
-#[derive(Queryable, Selectable, Debug)]
+#[derive(Queryable, Selectable, Debug, Serialize, Deserialize)]
 #[diesel(primary_key(id_objeto, id_distribuidor))]
 #[diesel(table_name = schema::distribuidor_del_objeto)]
 #[diesel(check_for_backend(diesel::pg::Pg))]
@@ -66,7 +67,7 @@ pub struct DistributorOfObject {
     pub object_type: i32,
 }
 
-#[derive(Queryable, Selectable, Debug)]
+#[derive(Queryable, Selectable, Debug, Serialize, Deserialize)]
 #[diesel(table_name = schema::estudio)]
 #[diesel(check_for_backend(diesel::pg::Pg))]
 pub struct Studio {
@@ -78,7 +79,7 @@ pub struct Studio {
     pub studio_name: String,
 }
 
-#[derive(Queryable, Selectable, Debug)]
+#[derive(Queryable, Selectable, Debug, Serialize, Deserialize)]
 #[diesel(primary_key(id_estudio, id_videojuego))]
 #[diesel(table_name = schema::estudio_de_un_videojuego)]
 #[diesel(check_for_backend(diesel::pg::Pg))]
@@ -89,7 +90,7 @@ pub struct StudioOfVideogame {
     pub videogame_id: String,
 }
 
-#[derive(Queryable, Selectable, Debug)]
+#[derive(Queryable, Selectable, Debug, Serialize, Deserialize)]
 #[diesel(table_name = schema::genero)]
 #[diesel(check_for_backend(diesel::pg::Pg))]
 pub struct Genre {
@@ -99,7 +100,7 @@ pub struct Genre {
     pub genre_name: String,
 }
 
-#[derive(Queryable, Selectable, Debug)]
+#[derive(Queryable, Selectable, Debug, Serialize, Deserialize)]
 #[diesel(primary_key(id_objeto, id_genero))]
 #[diesel(table_name = schema::genero_del_objeto)]
 #[diesel(check_for_backend(diesel::pg::Pg))]
@@ -112,7 +113,7 @@ pub struct GenreOfObject {
     pub object_type: i32,
 }
 
-#[derive(Queryable, Selectable, Debug)]
+#[derive(Queryable, Selectable, Debug, Serialize, Deserialize)]
 #[diesel(table_name = schema::identificador)]
 #[diesel(check_for_backend(diesel::pg::Pg))]
 pub struct Identifier {
@@ -122,7 +123,7 @@ pub struct Identifier {
     pub dewey_identifier: String,
 }
 
-#[derive(Queryable, Selectable, Debug)]
+#[derive(Queryable, Selectable, Debug, Serialize, Deserialize)]
 #[diesel(table_name = schema::idioma)]
 #[diesel(check_for_backend(diesel::pg::Pg))]
 pub struct Language {
@@ -132,7 +133,7 @@ pub struct Language {
     pub language_name: String,
 }
 
-#[derive(Queryable, Selectable, Debug)]
+#[derive(Queryable, Selectable, Debug, Serialize, Deserialize)]
 #[diesel(table_name = schema::libro)]
 #[diesel(check_for_backend(diesel::pg::Pg))]
 pub struct Book {
@@ -150,7 +151,7 @@ pub struct Book {
     pub page_count: i32,
 }
 
-#[derive(Queryable, Selectable, Debug)]
+#[derive(Queryable, Selectable, Debug, Serialize, Deserialize)]
 #[diesel(table_name = schema::musica)]
 #[diesel(check_for_backend(diesel::pg::Pg))]
 pub struct Music {
@@ -168,7 +169,7 @@ pub struct Music {
     pub duration: NaiveTime,
 }
 
-#[derive(Queryable, Selectable, Debug)]
+#[derive(Queryable, Selectable, Debug, Serialize, Deserialize)]
 #[diesel(primary_key(id_objeto, id_coleccion))]
 #[diesel(table_name = schema::objeto_en_coleccion)]
 #[diesel(check_for_backend(diesel::pg::Pg))]
@@ -181,7 +182,7 @@ pub struct ObjectInCollection {
     pub object_type: i32,
 }
 
-#[derive(Queryable, Selectable, Debug)]
+#[derive(Queryable, Selectable, Debug, Serialize, Deserialize)]
 #[diesel(table_name = schema::pais)]
 #[diesel(check_for_backend(diesel::pg::Pg))]
 pub struct Country {
@@ -191,7 +192,7 @@ pub struct Country {
     pub country_name: String,
 }
 
-#[derive(Queryable, Selectable, Debug)]
+#[derive(Queryable, Selectable, Debug, Serialize, Deserialize)]
 #[diesel(table_name = schema::pegi)]
 #[diesel(check_for_backend(diesel::pg::Pg))]
 pub struct Pegi {
@@ -201,7 +202,7 @@ pub struct Pegi {
     pub pegi_category: String,
 }
 
-#[derive(Queryable, Selectable, Debug)]
+#[derive(Queryable, Selectable, Debug, Serialize, Deserialize)]
 #[diesel(table_name = schema::videojuego)]
 #[diesel(check_for_backend(diesel::pg::Pg))]
 pub struct Videogame {

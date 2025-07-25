@@ -1,1 +1,4 @@
-<h1 class="text-3xl text-red-500">Hello world</h1>
+<script>
+</script>
+
+<h1>Hello there!</h1>

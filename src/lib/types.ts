@@ -1,14 +1,14 @@
 type project_object = {
-    id: number;
-    name: string;
-    published_year: Date;
-    category: string;
-    lang: string;
+    object_id: string;
+    object_name: string;
+    publication_year: string;
+    identifier_id: string;
+    language_id: string;
 }
 
-export type book = { pages: number } & project_object
-export type music = { duration: number } & project_object
-export type videogame = { supports_console_controller: boolean, pegi: string } & project_object
+export type book = { page_count: number } & project_object
+export type music = { duration: string } & project_object
+export type videogame = { controller_support: boolean, pegi_id: string } & project_object
 
 export class Optional<T> {
     static STATE = {
