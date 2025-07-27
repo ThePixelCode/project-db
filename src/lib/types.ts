@@ -1,54 +1,106 @@
-type project_object = {
+export type Author = {
+    author_id: string;
+    country_id?: string;
+    author_name: string;
+};
+
+export type AuthorOfObject = {
+    object_id: string;
+    author_id: string;
+    object_type: number;
+};
+
+export type Collection = {
+    collection_id: string;
+    collection_name: string;
+    parent_collection?: string;
+};
+
+export type Distributor = {
+    distributor_id: string;
+    country_id: string;
+    distributor_name: string;
+    foundation_year: string;
+};
+
+export type DistributorOfObject = {
+    object_id: string;
+    distributor_id: string;
+    object_type: number;
+};
+
+export type Studio = {
+    studio_id: string;
+    country_id: string;
+    studio_name: string;
+};
+
+export type StudioOfVideogame = {
+    studio_id: string;
+    videogame_id: string;
+};
+
+export type Genre = {
+    genre_id: string;
+    genre_name: string;
+};
+
+export type GenreOfObject = {
+    object_id: string;
+    genre_id: string;
+    object_type: number;
+};
+
+export type Identifier = {
+    identifier_id: string;
+    dewey_identifier: string;
+};
+
+export type Language = {
+    language_id: string;
+    language_name: string;
+};
+
+export type Book = {
     object_id: string;
     object_name: string;
-    publication_year: string;
+    publication_year?: string;
     identifier_id: string;
     language_id: string;
-}
+    page_count: number;
+};
 
-export type book = { page_count: number } & project_object
-export type music = { duration: string } & project_object
-export type videogame = { controller_support: boolean, pegi_id: string } & project_object
+export type Music = {
+    object_id: string;
+    object_name: string;
+    publication_year?: string;
+    identifier_id: string;
+    language_id: string;
+    duration: string;
+};
 
-export class Optional<T> {
-    static STATE = {
-        PRESENT: Symbol("present"),
-        AUSENT: Symbol("ausent")
-    }
-    private value: T | undefined
-    private state: typeof Optional.STATE.PRESENT | typeof Optional.STATE.AUSENT
-    private constructor(t: T | undefined, initial_state: typeof Optional.STATE.PRESENT | typeof Optional.STATE.AUSENT) {
-        this.value = t;
-        this.state = initial_state
-    }
+export type ObjectInCollection = {
+    object_id: string;
+    collection_id: string;
+    object_type: number;
+};
 
-    static empty<T>(): Optional<T> {
-        return new Optional<T>(undefined, Optional.STATE.AUSENT)
-    }
+export type Country = {
+    country_id: string;
+    country_name: string;
+};
 
-    static of<T>(t: T): Optional<T> {
-        return new Optional<T>(t, Optional.STATE.PRESENT)
-    }
+export type Pegi = {
+    pegi_id: string;
+    pegi_category: string;
+};
 
-    static of_undefinedable<T>(t: T | undefined): Optional<T> {
-        if (t === undefined) {
-            return Optional.empty()
-        }
-        return Optional.of(t)
-    }
-
-    public is_present(): boolean {
-        return this.state === Optional.STATE.PRESENT
-    }
-
-    public is_empty(): boolean {
-        return this.state === Optional.STATE.AUSENT
-    }
-
-    public unwrap(): T {
-        if (this.is_empty()) {
-            throw new Error("unwrap called on empty")
-        }
-        return this.value as T
-    }
-}
+export type Videogame = {
+    object_id: string;
+    object_name: string;
+    publication_year?: string;
+    identifier_id: string;
+    language_id: string;
+    controller_support: boolean;
+    pegi_id: string;
+};
