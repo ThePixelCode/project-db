@@ -1,72 +1,60 @@
 <script lang="ts">
     import { invoke } from "@tauri-apps/api/core";
-    import { type Book } from "../lib/types";
-
-    let { book, onUpdate }: { book: Book; onUpdate?: () => void } = $props();
+    import type { Collection } from "$lib/types";
+    let {
+        collection,
+        onUpdate,
+    }: { collection: Collection; onUpdate?: () => void } = $props();
     let showEditModal = $state<boolean>(false);
     let showDeleteModal = $state<boolean>(false);
 
     // Variables reactivas para el formulario de edición
-    let object_name = $state<string>(book.object_name.trim());
-    let publication_year = $state<string>(book.publication_year ?? "");
-    let identifier_id = $state<string>(book.identifier_id.trim());
-    let language_id = $state<string>(book.language_id.trim());
-    let page_count = $state<string>(`${book.page_count}`);
+    let collection_name = $state<string>(
+        (collection.collection_name ?? "").trim(),
+    );
+    let parent_collection = $state<string>(
+        (collection.parent_collection ?? "").trim(),
+    );
 
     async function handleEditSubmit(e: Event) {
         e.preventDefault();
-        const new_book: Book = {
-            ...book,
-            object_name,
-            publication_year,
-            identifier_id,
-            language_id,
-            page_count: Number(page_count.trim()),
+        const new_collection: Collection = {
+            ...collection,
+            collection_name: collection_name.trim(),
+            parent_collection: parent_collection.trim(),
         };
-        let result = await invoke<boolean>("update_book", {
-            new_book,
+        let result = await invoke<boolean>("update_collection", {
+            new_collection,
         });
-        console.log(
-            `Update ${book.object_id} ${result ? "updated" : "not updated"}`,
-        );
         showEditModal = false;
         if (onUpdate) onUpdate();
     }
 
     async function handleDelete() {
-        let result = await invoke<boolean>("delete_book", {
-            id: book.object_id,
+        let result = await invoke<boolean>("delete_collection", {
+            id: collection.collection_id,
         });
-        console.log(
-            `Delete ${book.object_id} ${result ? "deleted" : "not deleted"}`,
-        );
         showDeleteModal = false;
         if (onUpdate) onUpdate();
     }
 </script>
 
 <tr>
-    <td class="px-4 py-2 border">{book.object_id.trim()}</td>
-    <td class="px-4 py-2 border">{book.object_name.trim()}</td>
-    <td class="px-4 py-2 border">{book.publication_year}</td>
-    <td class="px-4 py-2 border">{book.identifier_id.trim()}</td>
-    <td class="px-4 py-2 border">{book.language_id.trim()}</td>
-    <td class="px-4 py-2 border">{book.page_count}</td>
+    <td class="px-4 py-2 border">{collection.collection_id}</td>
+    <td class="px-4 py-2 border">{collection.collection_name}</td>
+    <td class="px-4 py-2 border">{collection.parent_collection ?? ""}</td>
     <td class="px-4 py-2 border">
         <button
             class="bg-blue-500 text-white px-2 py-1 rounded mr-2"
             onclick={() => {
-                object_name = book.object_name.trim();
-                publication_year = book.publication_year ?? "";
-                identifier_id = book.identifier_id.trim();
-                language_id = book.language_id.trim();
-                page_count = `${book.page_count}`;
+                collection_name = (collection.collection_name ?? "").trim();
+                parent_collection = (collection.parent_collection ?? "").trim();
                 showEditModal = true;
-            }}>Edit</button
+            }}>Editar</button
         >
         <button
             class="bg-red-500 text-white px-2 py-1 rounded"
-            onclick={() => (showDeleteModal = true)}>Delete</button
+            onclick={() => (showDeleteModal = true)}>Eliminar</button
         >
 
         {#if showEditModal}
@@ -74,7 +62,7 @@
                 class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
             >
                 <div class="bg-white p-6 rounded shadow-lg min-w-[300px]">
-                    <h3 class="text-lg font-bold mb-4">Editar libro</h3>
+                    <h3 class="text-lg font-bold mb-4">Editar colección</h3>
                     <form
                         onsubmit={handleEditSubmit}
                         class="flex flex-col gap-2"
@@ -84,39 +72,15 @@
                             <input
                                 type="text"
                                 class="border p-1 w-full"
-                                bind:value={object_name}
+                                bind:value={collection_name}
                             />
                         </label>
                         <label>
-                            Año de publicación:
-                            <input
-                                type="date"
-                                class="border p-1 w-full"
-                                bind:value={publication_year}
-                            />
-                        </label>
-                        <label>
-                            Identificador:
+                            Padre:
                             <input
                                 type="text"
                                 class="border p-1 w-full"
-                                bind:value={identifier_id}
-                            />
-                        </label>
-                        <label>
-                            Idioma:
-                            <input
-                                type="text"
-                                class="border p-1 w-full"
-                                bind:value={language_id}
-                            />
-                        </label>
-                        <label>
-                            Páginas:
-                            <input
-                                type="number"
-                                class="border p-1 w-full"
-                                bind:value={page_count}
+                                bind:value={parent_collection}
                             />
                         </label>
                         <div class="flex gap-2 mt-4">
@@ -141,8 +105,8 @@
                 class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
             >
                 <div class="bg-white p-6 rounded shadow-lg min-w-[300px]">
-                    <h3 class="text-lg font-bold mb-4">¿Eliminar libro?</h3>
-                    <p>¿Estás seguro de que deseas eliminar este libro?</p>
+                    <h3 class="text-lg font-bold mb-4">¿Eliminar colección?</h3>
+                    <p>¿Estás seguro de que deseas eliminar esta colección?</p>
                     <div class="mt-4 flex gap-2">
                         <button
                             class="px-4 py-2 bg-red-500 text-white rounded"

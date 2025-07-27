@@ -1,18 +1,18 @@
 <script lang="ts">
     import { invoke } from "@tauri-apps/api/core";
-    import { type videogame as videogameType } from "../lib/types";
+    import type { Videogame } from "../lib/types";
 
     let {
         videogame,
         onUpdate,
-    }: { videogame: videogameType; onUpdate?: () => void } = $props();
+    }: { videogame: Videogame; onUpdate?: () => void } = $props();
     let showEditModal = $state<boolean>(false);
     let showDeleteModal = $state<boolean>(false);
     console.log(typeof videogame.publication_year);
 
     // Formulario de edición: variables individuales para reactividad
     let object_name = $state<string>(videogame.object_name.trim());
-    let publication_year = $state<string>(videogame.publication_year);
+    let publication_year = $state<string>(videogame.publication_year ?? "");
     let identifier_id = $state<string>(videogame.identifier_id.trim());
     let language_id = $state<string>(videogame.language_id.trim());
     let controller_support = $state<boolean>(videogame.controller_support);
@@ -20,7 +20,7 @@
 
     async function handleEditSubmit(e: Event) {
         e.preventDefault();
-        const new_videogame: videogameType = {
+        const new_videogame: Videogame = {
             ...videogame,
             object_name,
             publication_year,
@@ -67,7 +67,7 @@
             onclick={() => {
                 // force update of values, fixes bug
                 object_name = videogame.object_name.trim();
-                publication_year = videogame.publication_year;
+                publication_year = videogame.publication_year ?? "";
                 identifier_id = videogame.identifier_id.trim();
                 language_id = videogame.language_id.trim();
                 controller_support = videogame.controller_support;

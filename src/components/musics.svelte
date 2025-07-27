@@ -1,11 +1,12 @@
 <script lang="ts">
-    import type { music } from "$lib/types";
+    import type { Music as MusicType } from "$lib/types";
     import { invoke } from "@tauri-apps/api/core";
     import Music from "./music.svelte";
 
-    let musics = $state<music[]>([]);
+    let musics = $state<MusicType[]>([]);
     let page = $state<number>(0);
     let showCreateModal = $state<boolean>(false);
+    let formName = $state<string>("");
 
     // Variables para el formulario de creación
     let object_id = $state<string>("");
@@ -15,8 +16,25 @@
     let language_id = $state<string>("");
     let duration = $state<string>("");
 
+    function searchAll(page: number) {
+        invoke<MusicType[]>("get_musics", { page }).then((value) => {
+            musics = value;
+        });
+    }
+
     function process(page: number) {
-        invoke<music[]>("get_musics", { page }).then((value) => {
+        if (formName.trim() === "") {
+            searchAll(page);
+        } else {
+            searchMusics(page);
+        }
+    }
+
+    function searchMusics(page: number) {
+        invoke<MusicType[]>("get_music_by_name", {
+            page,
+            name: formName,
+        }).then((value) => {
             musics = value;
         });
     }
@@ -50,14 +68,35 @@
     $effect(() => {
         process(page);
     });
+
+    $effect(() => {
+        if (formName.trim() !== "") {
+            page = 0;
+        }
+    });
 </script>
 
-<button
-    class="mb-4 px-4 py-2 bg-green-500 text-white rounded"
-    onclick={() => (showCreateModal = true)}
->
-    Crear música
-</button>
+<div class="flex items-center gap-4 mb-4">
+    <input
+        type="text"
+        class="border p-2 rounded w-full max-w-xs"
+        placeholder="Buscar por nombre..."
+        bind:value={formName}
+        onkeydown={(e) => {
+            if (e.key === "Enter") process(page);
+        }}
+    />
+    <button
+        class="px-4 py-2 bg-blue-500 text-white rounded"
+        onclick={() => {
+            process(page);
+        }}>Buscar</button
+    >
+    <button
+        class="px-4 py-2 bg-green-500 text-white rounded"
+        onclick={() => (showCreateModal = true)}>Crear música</button
+    >
+</div>
 
 {#if showCreateModal}
     <div

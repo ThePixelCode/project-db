@@ -1,66 +1,48 @@
 <script lang="ts">
-    import type { Book as BookType } from "$lib/types";
+    import type { Distributor as DistributorType } from "$lib/types";
     import { invoke } from "@tauri-apps/api/core";
-    import Book from "./book.svelte";
+    import Distributor from "./distributor.svelte";
 
-    let books = $state<BookType[]>([]);
+    let distributors = $state<DistributorType[]>([]);
     let page = $state<number>(0);
     let showCreateModal = $state<boolean>(false);
-    let formName = $state<string>("");
 
     // Variables para el formulario de creación
-    let object_id = $state<string>("");
-    let object_name = $state<string>("");
-    let publication_year = $state<string>("");
-    let identifier_id = $state<string>("");
-    let language_id = $state<string>("");
-    let page_count = $state<string>("");
+    let distributor_id = $state<string>("");
+    let country_id = $state<string>("");
+    let distributor_name = $state<string>("");
+    let foundation_year = $state<string>("");
 
     function searchAll(page: number) {
-        invoke<BookType[]>("get_books", { page }).then((value) => {
-            books = value;
-        });
+        invoke<DistributorType[]>("get_distributors", { page }).then(
+            (value) => {
+                distributors = value;
+            },
+        );
     }
 
     function process(page: number) {
-        if (formName.trim() === "") {
-            searchAll(page);
-        } else {
-            searchBooks(page);
-        }
-    }
-
-    function searchBooks(page: number) {
-        invoke<BookType[]>("get_book_by_name", {
-            page,
-            name: formName,
-        }).then((value) => {
-            books = value;
-        });
+        searchAll(page);
     }
 
     async function handleCreateSubmit(e: Event) {
         e.preventDefault();
-        const new_book = {
-            object_id,
-            object_name,
-            publication_year,
-            identifier_id,
-            language_id,
-            page_count,
+        const new_distributor = {
+            distributor_id,
+            country_id,
+            distributor_name,
+            foundation_year,
         };
-        let result = await invoke<boolean>("create_book", {
-            new_book,
+        let result = await invoke<boolean>("create_distributor", {
+            new_distributor,
         });
         if (result) {
             showCreateModal = false;
             // Limpiar campos
-            object_id = "";
-            object_name = "";
-            publication_year = "";
-            identifier_id = "";
-            language_id = "";
-            page_count = "";
+            distributor_id = "";
+            country_id = "";
+            distributor_name = "";
+            foundation_year = "";
             process(page);
         }
     }
@@ -68,33 +50,12 @@
     $effect(() => {
         process(page);
     });
-
-    $effect(() => {
-        if (formName.trim() !== "") {
-            page = 0;
-        }
-    });
 </script>
 
 <div class="flex items-center gap-4 mb-4">
-    <input
-        type="text"
-        class="border p-2 rounded w-full max-w-xs"
-        placeholder="Buscar por nombre..."
-        bind:value={formName}
-        onkeydown={(e) => {
-            if (e.key === "Enter") process(page);
-        }}
-    />
-    <button
-        class="px-4 py-2 bg-blue-500 text-white rounded"
-        onclick={() => {
-            process(page);
-        }}>Buscar</button
-    >
     <button
         class="px-4 py-2 bg-green-500 text-white rounded"
-        onclick={() => (showCreateModal = true)}>Crear libro</button
+        onclick={() => (showCreateModal = true)}>Crear distribuidor</button
     >
 </div>
 
@@ -103,54 +64,38 @@
         class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
     >
         <div class="bg-white p-6 rounded shadow-lg min-w-[300px]">
-            <h3 class="text-lg font-bold mb-4">Crear libro</h3>
+            <h3 class="text-lg font-bold mb-4">Crear distribuidor</h3>
             <form onsubmit={handleCreateSubmit} class="flex flex-col gap-2">
                 <label>
                     ID:
                     <input
                         type="text"
                         class="border p-1 w-full"
-                        bind:value={object_id}
+                        bind:value={distributor_id}
                     />
                 </label>
                 <label>
-                    Título:
+                    País:
                     <input
                         type="text"
                         class="border p-1 w-full"
-                        bind:value={object_name}
+                        bind:value={country_id}
                     />
                 </label>
                 <label>
-                    Año de publicación:
-                    <input
-                        type="date"
-                        class="border p-1 w-full"
-                        bind:value={publication_year}
-                    />
-                </label>
-                <label>
-                    Identificador:
+                    Nombre:
                     <input
                         type="text"
                         class="border p-1 w-full"
-                        bind:value={identifier_id}
+                        bind:value={distributor_name}
                     />
                 </label>
                 <label>
-                    Idioma:
+                    Año de fundación:
                     <input
                         type="text"
                         class="border p-1 w-full"
-                        bind:value={language_id}
-                    />
-                </label>
-                <label>
-                    Páginas:
-                    <input
-                        type="number"
-                        class="border p-1 w-full"
-                        bind:value={page_count}
+                        bind:value={foundation_year}
                     />
                 </label>
                 <div class="flex gap-2 mt-4">
@@ -175,18 +120,16 @@
     <thead>
         <tr class="bg-gray-100">
             <th class="px-4 py-2 border">ID</th>
-            <th class="px-4 py-2 border">Título</th>
-            <th class="px-4 py-2 border">Año</th>
-            <th class="px-4 py-2 border">Identificador</th>
-            <th class="px-4 py-2 border">Idioma</th>
-            <th class="px-4 py-2 border">Número de paginas</th>
+            <th class="px-4 py-2 border">País</th>
+            <th class="px-4 py-2 border">Nombre</th>
+            <th class="px-4 py-2 border">Año de fundación</th>
             <th class="px-4 py-2 border">Actions</th>
         </tr>
     </thead>
     <tbody>
-        {#each books as book}
-            <Book
-                {book}
+        {#each distributors as distributor}
+            <Distributor
+                {distributor}
                 onUpdate={() => {
                     process(page);
                 }}

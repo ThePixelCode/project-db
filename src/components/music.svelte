@@ -1,22 +1,21 @@
 <script lang="ts">
     import { invoke } from "@tauri-apps/api/core";
-    import { type music as musicType } from "../lib/types";
+    import type { Music } from "../lib/types";
 
-    let { music, onUpdate }: { music: musicType; onUpdate?: () => void } =
-        $props();
+    let { music, onUpdate }: { music: Music; onUpdate?: () => void } = $props();
     let showEditModal = $state<boolean>(false);
     let showDeleteModal = $state<boolean>(false);
 
     // Formulario de edición: variables individuales para reactividad
     let object_name = $state<string>(music.object_name.trim());
-    let publication_year = $state<string>(music.publication_year);
+    let publication_year = $state<string>(music.publication_year ?? "");
     let identifier_id = $state<string>(music.identifier_id.trim());
     let language_id = $state<string>(music.language_id.trim());
     let duration = $state<string>(music.duration.trim());
 
     async function handleEditSubmit(e: Event) {
         e.preventDefault();
-        const new_music: musicType = {
+        const new_music: Music = {
             ...music,
             object_name,
             publication_year,
@@ -58,7 +57,7 @@
             class="bg-blue-500 text-white px-2 py-1 rounded mr-2"
             onclick={() => {
                 object_name = music.object_name.trim();
-                publication_year = music.publication_year.trim();
+                publication_year = music.publication_year ?? "";
                 identifier_id = music.identifier_id;
                 language_id = music.language_id.trim();
                 duration = music.duration.trim();
