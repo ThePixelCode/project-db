@@ -2,11 +2,24 @@
     import type { Videogame as VideogameType } from "$lib/types";
     import { invoke } from "@tauri-apps/api/core";
     import Videogame from "./videogame.svelte";
+    import { Chart } from "frappe-charts";
+    let chartRef = $state();
+    let showChartModal = $state<boolean>(false);
 
     let videogames = $state<VideogameType[]>([]);
+    let studios = $state<[number, string][]>([]);
     let page = $state<number>(0);
     let showCreateModal = $state<boolean>(false);
     let formName = $state<string>("");
+    let data = $derived({
+        labels: studios.map((studio) => studio[1]),
+        datasets: [
+            {
+                name: "Duración (min)",
+                values: studios.map((studio) => studio[0]),
+            },
+        ],
+    });
 
     // Variables para el formulario de creación
     let object_id = $state<string>("");
@@ -21,6 +34,11 @@
         invoke<VideogameType[]>("get_videogames", { page }).then((value) => {
             videogames = value;
         });
+        invoke<[number, string][]>("get_videogames_and_studios", { page }).then(
+            (value) => {
+                studios = value;
+            },
+        );
     }
 
     function process(page: number) {
@@ -37,6 +55,12 @@
             name: formName,
         }).then((value) => {
             videogames = value;
+        });
+        invoke<[number, string][]>("get_videogames_and_studios_by_name", {
+            page,
+            name: formName,
+        }).then((value) => {
+            studios = value;
         });
     }
 
@@ -73,6 +97,18 @@
     });
 
     $effect(() => {
+        if (showChartModal && studios.length !== 0 && chartRef) {
+            new Chart(chartRef, {
+                data,
+                title: "Estudios por Videojuego",
+                type: "bar",
+                height: 500,
+                animate: true,
+            });
+        }
+    });
+
+    $effect(() => {
         if (formName.trim() !== "") {
             page = 0;
         }
@@ -95,6 +131,28 @@
             process(page);
         }}>Buscar</button
     >
+    <button
+        class="px-4 py-2 bg-purple-500 text-white rounded"
+        onclick={() => (showChartModal = true)}
+    >
+        Ver gráfico
+    </button>
+    {#if showChartModal}
+        <div
+            class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+        >
+            <div class="bg-white p-6 rounded shadow-lg min-w-[1000px] relative">
+                <button
+                    class="absolute top-2 right-2 text-gray-500 hover:text-black"
+                    onclick={() => (showChartModal = false)}>&#10005;</button
+                >
+                <h3 class="text-lg font-bold mb-4">
+                    Gráfico de Estudios por Videojuego
+                </h3>
+                <div bind:this={chartRef} id="chart"></div>
+            </div>
+        </div>
+    {/if}
     <button
         class="px-4 py-2 bg-green-500 text-white rounded"
         onclick={() => (showCreateModal = true)}>Crear videojuego</button

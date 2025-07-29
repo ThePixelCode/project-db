@@ -1,12 +1,25 @@
 <script lang="ts">
     import type { Book as BookType } from "$lib/types";
     import { invoke } from "@tauri-apps/api/core";
+    import { Chart } from "frappe-charts";
     import Book from "./book.svelte";
 
     let books = $state<BookType[]>([]);
     let page = $state<number>(0);
     let showCreateModal = $state<boolean>(false);
     let formName = $state<string>("");
+
+    let data = $derived({
+        labels: books.map((book) => book.object_name),
+        datasets: [
+            {
+                name: "Número de Páginas",
+                values: books.map((book) => book.page_count),
+            },
+        ],
+    });
+    let chartRef = $state();
+    let showChartModal = $state<boolean>(false);
 
     // Variables para el formulario de creación
     let object_id = $state<string>("");
@@ -15,6 +28,18 @@
     let identifier_id = $state<string>("");
     let language_id = $state<string>("");
     let page_count = $state<string>("");
+
+    $effect(() => {
+        if (showChartModal && books.length !== 0 && chartRef) {
+            new Chart(chartRef, {
+                data,
+                title: "Paginas de Libro",
+                type: "bar",
+                height: 500,
+                animate: true,
+            });
+        }
+    });
 
     function searchAll(page: number) {
         invoke<BookType[]>("get_books", { page }).then((value) => {
@@ -92,6 +117,26 @@
             process(page);
         }}>Buscar</button
     >
+    <button
+        class="px-4 py-2 bg-purple-500 text-white rounded"
+        onclick={() => (showChartModal = true)}
+    >
+        Ver gráfico
+    </button>
+    {#if showChartModal}
+        <div
+            class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+        >
+            <div class="bg-white p-6 rounded shadow-lg min-w-[1000px] relative">
+                <button
+                    class="absolute top-2 right-2 text-gray-500 hover:text-black"
+                    onclick={() => (showChartModal = false)}>&#10005;</button
+                >
+                <h3 class="text-lg font-bold mb-4">Gráfico de libros</h3>
+                <div bind:this={chartRef} id="chart"></div>
+            </div>
+        </div>
+    {/if}
     <button
         class="px-4 py-2 bg-green-500 text-white rounded"
         onclick={() => (showCreateModal = true)}>Crear libro</button

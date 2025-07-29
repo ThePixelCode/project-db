@@ -10,9 +10,9 @@ use crate::{
     },
     state::AppState,
 };
-use diesel::delete;
 use diesel::insert_into;
 use diesel::update;
+use diesel::{delete, dsl::count};
 
 use diesel::prelude::*;
 
@@ -860,6 +860,65 @@ fn create_collection(new_collection: Collection, state: State<'_, AppState>) -> 
     }
 }
 
+#[tauri::command(rename_all = "snake_case")]
+fn get_videogames_and_studios(page: i64, state: State<'_, AppState>) -> Vec<(i64, String)> {
+    use db::schema::estudio_de_un_videojuego;
+    use db::schema::videojuego;
+    let offset = page * PAGE_SIZE;
+    let result: Vec<(i64, String)> = {
+        let mut binding = state.posgresql.lock().unwrap();
+        info!("get_collections: page={}", page);
+        let connection = binding.deref_mut();
+        estudio_de_un_videojuego::table
+            .inner_join(
+                videojuego::table
+                    .on(estudio_de_un_videojuego::id_videojuego.eq(videojuego::id_objeto)),
+            )
+            .group_by(videojuego::nombre_objeto)
+            .select((
+                count(estudio_de_un_videojuego::id_estudio),
+                videojuego::nombre_objeto,
+            ))
+            .offset(offset)
+            .limit(PAGE_SIZE)
+            .load::<(i64, String)>(connection)
+            .unwrap_or_default()
+    };
+    result
+}
+
+#[tauri::command(rename_all = "snake_case")]
+fn get_videogames_and_studios_by_name(
+    page: i64,
+    name: String,
+    state: State<'_, AppState>,
+) -> Vec<(i64, String)> {
+    use db::schema::estudio_de_un_videojuego;
+    use db::schema::videojuego;
+    let offset = page * PAGE_SIZE;
+    let result: Vec<(i64, String)> = {
+        let mut binding = state.posgresql.lock().unwrap();
+        info!("get_collections: page={}", page);
+        let connection = binding.deref_mut();
+        estudio_de_un_videojuego::table
+            .inner_join(
+                videojuego::table
+                    .on(estudio_de_un_videojuego::id_videojuego.eq(videojuego::id_objeto)),
+            )
+            .group_by(videojuego::nombre_objeto)
+            .select((
+                count(estudio_de_un_videojuego::id_estudio),
+                videojuego::nombre_objeto,
+            ))
+            .filter(videojuego::nombre_objeto.ilike(format!("%{}%", name.trim())))
+            .offset(offset)
+            .limit(PAGE_SIZE)
+            .load::<(i64, String)>(connection)
+            .unwrap_or_default()
+    };
+    result
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     TermLogger::init(
@@ -918,7 +977,17 @@ pub fn run() {
             get_collections,
             update_collection,
             delete_collection,
-            create_collection
+            create_collection,
+            get_distributors,
+            update_distributor,
+            delete_distributor,
+            create_distributor,
+            get_genres,
+            update_genre,
+            delete_genre,
+            create_genre,
+            get_videogames_and_studios,
+            get_videogames_and_studios_by_name,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
